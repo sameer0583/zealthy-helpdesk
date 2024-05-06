@@ -1,0 +1,47 @@
+version: '4.0'
+services:
+  mysql:
+    image: mysql:latest
+    container_name: zealthy_mysql
+    environment:
+      MYSQL_DATABASE: 'zealthy_help_desk'
+      MYSQL_USER: 'zealthy'
+      MYSQL_PASSWORD: 'password123'
+      MYSQL_ROOT_PASSWORD: 'rootpassword'
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  api:
+    build: .
+    container_name: zealthy_api
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=zealthy
+      - DB_PASS=password123
+      - DB_NAME=zealthy_help_desk
+      - JWT_SECRET=your_jwt_secret
+    restart: unless-stopped
+    command: >
+      /bin/bash -c "
+        while !</dev/tcp/mysql/3306; do
+          echo 'Waiting for MySQL...'
+          sleep 1
+        done
+        npm run db:seed && npm run server:start
+      "
+
+volumes:
+  mysql_data:
