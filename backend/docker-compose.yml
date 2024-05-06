@@ -32,7 +32,6 @@ services:
       - DB_USER=zealthy
       - DB_PASS=password123
       - DB_NAME=zealthy_help_desk
-      - JWT_SECRET=your_jwt_secret
     restart: unless-stopped
     command: >
       /bin/bash -c "
