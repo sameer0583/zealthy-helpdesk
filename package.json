@@ -1,0 +1,14 @@
+{
+  "name": "zealthy-helpdesk",
+  "version": "1.0.0",
+  "description": "",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "start:backend": "npm docker:recreate --workspace=backend",
+    "start:frontend": "npm start --workspace=frontend",
+    "start": "npm run start:backend & npm run start:frontend"
+  }
+}
